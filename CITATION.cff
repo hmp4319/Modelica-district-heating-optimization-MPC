@@ -24,27 +24,6 @@ version: 2.0.4
 doi: 10.1016/j.energy.2021.122103
 date-released: 2022-01-15
 url: https://www.sciencedirect.com/science/article/pii/S0360544221023513
-preferred-citation:
-  type: article
-  authors:
-  - family-names: Li
-  given-names: Haoran
-  orcid: https://orcid.org/0000-0000-0000-0000
-- family-names: Hou
-  given-names: Juan
-  orcid: https://orcid.org/0000-0000-0000-0000
-- family-names: Tian
-  given-names: Zhiyong
-  orcid: https://orcid.org/0000-0000-0000-0000
-- family-names: Hong
-  given-names: Tianzhen
-  orcid: https://orcid.org/0000-0000-0000-0000
-- family-names: Nord
-  given-names: Natasa
-  orcid: https://orcid.org/0000-0000-0000-0000
-- family-names: Rohde
-  given-names: Daniel
-  orcid: https://orcid.org/0000-0000-0000-0000
   journal: Energy
   month: 9
   start: 1 # First page number
