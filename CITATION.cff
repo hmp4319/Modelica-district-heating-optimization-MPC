@@ -9,21 +9,9 @@ title: >-
 message: >-
   For the package for optimizing district heating
   systems, please cite it as below.
-type: article
+type: software
 authors:
   - given-names: Haoran
     family-names: Li
   - given-names: Juan
     family-names: Hou
-  - family-names: Tian
-    given-names: Zhiyong
-  - family-names: Hong
-    given-names: Tianzhen
-  - family-names: Nord
-    given-names: Natasa
-  - family-names: Rohde
-    given-names: Danie
-doi: 10.1016/j.energy.2021.122103
-date-released: 2022-01-15
-url: https://www.sciencedirect.com/science/article/pii/S0360544221023513
-    
