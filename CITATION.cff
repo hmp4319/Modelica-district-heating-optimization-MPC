@@ -9,7 +9,7 @@ title: >-
 message: >-
   For the package for optimizing district heating
   systems, please cite it as below.
-type: article
+type: software
 authors:
   - given-names: Haoran
     family-names: Li
