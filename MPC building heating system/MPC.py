@@ -52,15 +52,15 @@ Tiaref.reset_index(drop=True, inplace=True)
 P_EDC.reset_index(drop=True, inplace=True)
 
 ##########################################################################################  
-### 2  Define MPC problem
-# 2.1 Initial guess trajectories
-# 2.1.1 Get simulation model
+### 3  Define MPC problem
+# 3.1 Initial guess trajectories
+# 3.1.1 Get simulation model
 init_fmu = compile_fmu("Building.Plant","C:/GitHub/MPC/OptModel.mop", compiler_options={'generate_html_diagnostics': True})
 init_model = load_fmu(init_fmu)
-# 2.1.2 Set manipulated variables
+# 3.1.2 Set manipulated variables
 init_model.set('Ts',50)
 init_model.set('mr',0.5)
-# 2.1.3 Set input variables
+# 3.1.3 Set input variables
 init_model.set('Toa',-2.4)
 init_model.set('Qin',91000)
 init_model.set('Hv',1000)
@@ -81,23 +81,23 @@ init_model.set('Tra2_init', Tra2_ini)
 init_model.set('Tra3_init', Tra3_ini)
 init_model.set('Tra4_init', Tra4_ini)
 init_model.set('Tra5_init', Tra5_ini)
-# 2.1.5 Compute initial guess trajectories
+# 3.1.5 Compute initial guess trajectories
 init_res = init_model.simulate(start_time=0., final_time=predict_time)
 
-# 2.2  Define simulation problem
+# 3.2  Define simulation problem
 sim_fmu = compile_fmu("Building.Plant","C:/GitHub/MPC/OptModel.mop", compiler_options={'generate_html_diagnostics': True})
 sim_model = load_fmu(sim_fmu)
 
-# 2.3 Define the optimal control problem
-# 2.3.1 Compile and load optimization problem
+# 3.3 Define the optimal control problem
+# 3.3.1 Compile and load optimization problem
 op = transfer_optimization_problem("Building.BuildingMPC","C:/GitHub/MPC/OptModel.mop", compiler_options={'generate_html_diagnostics': True, 'equation_sorting': True})
-# 2.3.2 Create blocking factors with quadratic penalty and bound on 'T_ras' and 'm_ra'
+# 3.3.2 Create blocking factors with quadratic penalty and bound on 'T_ras' and 'm_ra'
 bf_list = [1]*horizon
 factors = {'Ts': bf_list, 'mr': bf_list}
 du_quad_pen = {'Ts': 100, 'mr': 100}
 du_bounds = {'Ts': 5, 'mr': 0.5}
 bf = BlockingFactors(factors,du_bounds,du_quad_pen)
-# 2.3.3 Set collocation options
+# 3.3.3 Set collocation options
 opt_opts = op.optimize_options()
 opt_opts['n_e'] = n_e
 opt_opts['n_cp'] = 1
@@ -105,17 +105,17 @@ opt_opts['init_traj'] = init_res
 opt_opts['nominal_traj'] = init_res
 #opt_opts['blocking_factors'] = bf
 
-# 2.4 Lists for logging 
-# 2.4.1 Global variable
+# 3.4 Lists for logging 
+# 3.4.1 Global variable
 t_MPC = []
-# 2.4.2 Manipulated variable
+# 3.4.2 Manipulated variable
 Ts_MPC = []
 mr_MPC = []
-# 2.4.3 Input variables
+# 3.4.3 Input variables
 Toa_MPC = []
 Qin_MPC = []
 Hv_MPC = []
-# 2.4.4 Variable
+# 3.4.4 Variable
 Trs_MPC = []
 Trr_MPC = []
 ma_MPC = []
@@ -127,7 +127,7 @@ Qinf_MPC = []
 Qen_MPC = []
 Qmaen_MPC = []
 Qma_MPC = []
-# 2.4.5 State variables
+# 3.4.5 State variables
 Ten_MPC = []
 Tia_MPC = []
 Tma_MPC = []
@@ -136,13 +136,13 @@ Tra2_MPC = []
 Tra3_MPC = []
 Tra4_MPC = []
 Tra5_MPC = []
-# 2.4.6 Refrence for MPC
+# 3.4.6 Refrence for MPC
 Tiaref_MPC = []
 P_EDC_MPC = []
 
-# 2.5 MPC loops
+# 3.5 MPC loops
 for k in range(number_samp_tot):
-    # 2.5.1 Prepare input for optimization
+    # 3.5.1 Prepare input for optimization
     t0 = k*Sim_period
     tf = k*Sim_period+predict_time  
     data_input_opt_select = OrderedDict()
@@ -152,29 +152,29 @@ for k in range(number_samp_tot):
     data_input_opt_select['Tiaref'] = N.vstack([Timesamples[0:horizon+1],Tiaref[int(t0/Opt_period):int(tf/Opt_period)+1]])
     data_input_opt_select['P_EDC'] = N.vstack([Timesamples[0:horizon+1],P_EDC[int(t0/Opt_period):int(tf/Opt_period)+1]])
     opt_opts['external_data'] = ExternalData(eliminated=data_input_opt_select)
-    # 2.5.2 Solve optimization problem
+    # 3.5.2 Solve optimization problem
     res = op.optimize(options=opt_opts)
-    # 2.5.3 Get optimal Manipulated variable
+    # 3.5.3 Get optimal Manipulated variable
     Ts = res['Ts'][0]
     mr = res['mr'][0]
-    # 2.5.4 Reset the model and set the new initial states before simulating
+    # 3.5.4 Reset the model and set the new initial states before simulating
     sim_model.set('Ts',float(Ts))
     sim_model.set('mr',float(mr))  
     data_sim = N.vstack(( Timesamples[int(t0/Opt_period)], Toa[int(t0/Opt_period)], Qin[int(t0/Opt_period)], Hv[int(t0/Opt_period)]))
     data_input_sim = (['Toa', 'Qin', 'Hv'],N.transpose(data_sim))
-    # 2.5.5 Simulate using optimal inputs
+    # 3.5.5 Simulate using optimal inputs
     sim_res = sim_model.simulate(start_time= k*Sim_period, final_time=(k+1)*Sim_period, input=data_input_sim)
-    # 2.5.6 Logging
-    # 2.5.6.1 Global variable
+    # 3.5.6 Logging
+    # 3.5.6.1 Global variable
     t_MPC.append(sim_res['time'][-1])
-    # 2.5.6.2 Manipulated variable
+    # 3.5.6.2 Manipulated variable
     mr_MPC.append(sim_res['mr'][-1])
     Ts_MPC.append(sim_res['Ts'][-1])
-    # 2.5.6.3 Input variables
+    # 3.5.6.3 Input variables
     Toa_MPC.append(sim_res['Toa'][-1])
     Qin_MPC.append(sim_res['Qin'][-1])
     Hv_MPC.append(sim_res['Hv'][-1])
-    # 2.5.6.4 Variable
+    # 3.5.6.4 Variable
     Trs_MPC.append(sim_res['Trs'][-1])
     Trr_MPC.append(sim_res['Trr'][-1])
     ma_MPC.append(sim_res['ma'][-1])
@@ -186,7 +186,7 @@ for k in range(number_samp_tot):
     Qen_MPC.append(sim_res['Qen'][-1])
     Qmaen_MPC.append(sim_res['Qmaen'][-1])
     Qma_MPC.append(sim_res['Qma'][-1])
-    # 2.5.6.5 State variables
+    # 3.5.6.5 State variables
     Ten_MPC.append(sim_res['Ten'][-1])
     Tia_MPC.append(sim_res['Tia'][-1])
     Tma_MPC.append(sim_res['Tma'][-1])
@@ -195,12 +195,12 @@ for k in range(number_samp_tot):
     Tra3_MPC.append(sim_res['Tra[3]'][-1])
     Tra4_MPC.append(sim_res['Tra[4]'][-1])
     Tra5_MPC.append(sim_res['Tra[5]'][-1])
-    # 2.5.6.6 Refrence for MPC
+    # 3.5.6.6 Refrence for MPC
     Tiaref_MPC.append(res['Tiaref'][0])
     P_EDC_MPC.append(res['P_EDC'][0])
-    # 2.5.6.7 Generate random noise
+    # 3.5.6.7 Generate random noise
     noise_MPC = 1
-    # 2.5.6.8 Extract staets at the end of the simulation
+    # 3.5.6.8 Extract staets at the end of the simulation
     Ten = sim_res['Ten'][-1]*noise_MPC
     Tia = sim_res['Tia'][-1]*noise_MPC
     Tma = sim_res['Tma'][-1]*noise_MPC
@@ -209,7 +209,7 @@ for k in range(number_samp_tot):
     Tra3 = sim_res['Tra[3]'][-1]*noise_MPC
     Tra4 = sim_res['Tra[4]'][-1]*noise_MPC
     Tra5 = sim_res['Tra[5]'][-1]*noise_MPC
-    # 2.5.6.9 Set initial conditions for the next step
+    # 3.5.6.9 Set initial conditions for the next step
     op.set('Ten_init', float(Ten))
     op.set('Tia_init', float(Tia))
     op.set('Tma_init', float(Tma))
@@ -229,7 +229,7 @@ for k in range(number_samp_tot):
     sim_model.set('Tra5_init', float(Tra5))
 
 ##########################################################################################  
-### 3 Plot
+### 4 Plot
 # Air Temperature
 plt.close('Air Temperature')
 plt.figure('Air Temperature')
