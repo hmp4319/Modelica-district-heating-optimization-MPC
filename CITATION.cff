@@ -23,3 +23,14 @@ authors:
     given-names: Natasa
   - family-names: Rohde
     given-names: Daniel
+    doi: 10.1016/j.energy.2021.122103
+    date-released: 2022-01-15
+    url: https://www.sciencedirect.com/science/article/pii/S0360544221023513
+    journal: Energy
+    month: 9
+    start: 1 # First page number
+    end: 10 # Last page number
+    title: Optimize heat prosumers' economic performance under current heating price models by using water tank thermal energy storage.
+    issue: 122103
+    volume: 239
+    year: 2022
